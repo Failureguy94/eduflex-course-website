@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - EduFlex</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">EduFlex</a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="courses.html" class="nav-link">Courses</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="wishlist.html" class="nav-link wishlist-link active">
+                    <span class="wishlist-icon">♡</span>
+                    <span class="wishlist-count" id="wishlist-count">0</span>
+                </a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Wishlist Header -->
+    <section class="wishlist-header">
+        <div class="container">
+            <h1>My Wishlist</h1>
+            <p>Courses you've saved for later</p>
+        </div>
+    </section>
+
+    <!-- Wishlist Content -->
+    <section class="wishlist-content">
+        <div class="container">
+            <div class="wishlist-grid" id="wishlist-grid">
+                <!-- Empty state will be shown by default -->
+                <div class="empty-wishlist" id="empty-wishlist">
+                    <div class="empty-icon">♡</div>
+                    <h2>Your wishlist is empty</h2>
+                    <p>Start adding courses to your wishlist to save them for later</p>
+                    <a href="courses.html" class="cta-button">Browse Courses</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <p>&copy; 2024 EduFlex. All rights reserved.</p>
+                </div>
+                <div class="footer-right">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Instagram</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="wishlist.js"></script>
+</body>
+</html>
