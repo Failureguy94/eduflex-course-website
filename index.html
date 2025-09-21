@@ -18,10 +18,20 @@
                 <a href="courses.html" class="nav-link">Courses</a>
                 <a href="about.html" class="nav-link">About</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="auth-btn login-btn" id="login-btn">Login</button>
+                    <button class="auth-btn register-btn" id="register-btn">Register</button>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <button class="auth-btn logout-btn" id="logout-btn">Logout</button>
+                </div>
+
                 <a href="wishlist.html" class="nav-link wishlist-link">
                     <span class="wishlist-icon">♡</span>
                     <span class="wishlist-count" id="wishlist-count">0</span>
                 </a>
+
             </div>
             <div class="nav-toggle" id="nav-toggle">
                 <span class="bar"></span>
@@ -43,6 +53,12 @@
         <div class="container">
             <h2>Featured Courses</h2>
             <div class="courses-grid">
+                <div class="course-card">
+                    <div class="course-image">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Web Development Course">
+                    </div>
+                    <div class="course-content">
+                        <h3>Web Development Fundamentals</h3>
                 <div class="course-card" data-course-id="1">
                     <div class="course-image">
                         <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Web Development Course">
@@ -66,6 +82,12 @@
                         <a href="course-details.html" class="view-details">View Details</a>
                     </div>
                 </div>
+                <div class="course-card">
+                    <div class="course-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop" alt="Data Science Course">
+                    </div>
+                    <div class="course-content">
+                        <h3>Data Science & Analytics</h3>
 
                 <div class="course-card" data-course-id="2">
                     <div class="course-image">
@@ -87,9 +109,18 @@
                             <span class="rating-text">4.8 (95 reviews)</span>
                         </div>
                         <div class="course-price">$29.99</div>
+
                         <a href="course-details.html" class="view-details">View Details</a>
                     </div>
                 </div>
+
+
+                <div class="course-card">
+                    <div class="course-image">
+                        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=250&fit=crop" alt="UI/UX Design Course">
+                    </div>
+                    <div class="course-content">
+                        <h3>UI/UX Design Mastery</h3>
 
                 <div class="course-card" data-course-id="3">
                     <div class="course-image">
@@ -111,9 +142,18 @@
                             <span class="rating-text">4.3 (76 reviews)</span>
                         </div>
                         <div class="course-price">$24.99</div>
+
                         <a href="course-details.html" class="view-details">View Details</a>
                     </div>
                 </div>
+
+
+                <div class="course-card">
+                    <div class="course-image">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&fit=crop" alt="Digital Marketing Course">
+                    </div>
+                    <div class="course-content">
+                        <h3>Digital Marketing Strategy</h3>
 
                 <div class="course-card" data-course-id="4">
                     <div class="course-image">
@@ -135,6 +175,7 @@
                             <span class="rating-text">4.6 (142 reviews)</span>
                         </div>
                         <div class="course-price">$34.99</div>
+
                         <a href="course-details.html" class="view-details">View Details</a>
                     </div>
                 </div>
@@ -157,6 +198,83 @@
             </div>
         </div>
     </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to EduFlex</h2>
+                <span class="close" id="login-close">&times;</span>
+            </div>
+            <form class="auth-form" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required>
+                    <span class="error-message" id="login-email-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                    <span class="error-message" id="login-password-error"></span>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember-me">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                <button type="submit" class="auth-submit-btn">Login</button>
+                <div class="auth-switch">
+                    Don't have an account? <a href="#" id="switch-to-register">Register here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <span class="close" id="register-close">&times;</span>
+            </div>
+            <form class="auth-form" id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" name="name" required>
+                    <span class="error-message" id="register-name-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" name="email" required>
+                    <span class="error-message" id="register-email-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" name="password" required>
+                    <span class="error-message" id="register-password-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" name="confirmPassword" required>
+                    <span class="error-message" id="register-confirm-password-error"></span>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms-agreement" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" class="terms-link">Terms of Service</a>
+                    </label>
+                </div>
+                <button type="submit" class="auth-submit-btn">Create Account</button>
+                <div class="auth-switch">
+                    Already have an account? <a href="#" id="switch-to-login">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EduFlex</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>  
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">EduFlex</a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="courses.html" class="nav-link">Courses</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="auth-buttons" id="auth-buttons" style="display: none;">
+                    <button class="auth-btn login-btn" id="login-btn">Login</button>
+                    <button class="auth-btn register-btn" id="register-btn">Register</button>
+                </div>
+                <div class="user-menu" id="user-menu">
+                    <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                    <button class="auth-btn logout-btn" id="logout-btn">Logout</button>
+                </div>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+        <div class="container">
+            <div class="dashboard-welcome">
+                <h1>Welcome back, <span id="user-name">User</span>!</h1>
+                <p>Track your learning progress and manage your courses</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Content -->
+    <section class="dashboard-content">
+        <div class="container">
+            <div class="dashboard-grid">
+                <!-- Profile Card -->
+                <div class="dashboard-card profile-card">
+                    <div class="card-header">
+                        <h2>Profile Information</h2>
+                        <button class="edit-btn" id="edit-profile-btn">Edit</button>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <div class="avatar-circle">
+                                <span id="avatar-initial">U</span>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <h3 id="profile-name">User Name</h3>
+                            <p id="profile-email">user@example.com</p>
+                            <p class="member-since">Member since <span id="member-since">2024</span></p>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="courses-enrolled">0</span>
+                            <span class="stat-label">Courses Enrolled</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="courses-completed">0</span>
+                            <span class="stat-label">Courses Completed</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="learning-hours">0</span>
+                            <span class="stat-label">Learning Hours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enrolled Courses -->
+                <div class="dashboard-card courses-card">
+                    <div class="card-header">
+                        <h2>My Courses</h2>
+                        <a href="courses.html" class="view-all-btn">View All</a>
+                    </div>
+                    <div class="courses-list" id="enrolled-courses">
+                        <div class="empty-state">
+                            <div class="empty-icon">📚</div>
+                            <h3>No courses enrolled yet</h3>
+                            <p>Start your learning journey by enrolling in a course</p>
+                            <a href="courses.html" class="cta-button">Browse Courses</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Progress -->
+                <div class="dashboard-card progress-card">
+                    <div class="card-header">
+                        <h2>Learning Progress</h2>
+                    </div>
+                    <div class="progress-content">
+                        <div class="progress-overview">
+                            <div class="progress-circle">
+                                <svg class="progress-ring" width="120" height="120">
+                                    <circle class="progress-ring-circle" stroke="#e0e0e0" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                                    <circle class="progress-ring-circle progress-ring-fill" stroke="url(#gradient)" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" style="stroke-dasharray: 326.73; stroke-dashoffset: 326.73;" id="progress-ring"/>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-percentage" id="progress-percentage">0%</span>
+                                    <span class="progress-label">Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress-details">
+                            <div class="progress-item">
+                                <span class="progress-course">Web Development Fundamentals</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <span class="progress-percent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-card activity-card">
+                    <div class="card-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="activity-list" id="recent-activity">
+                        <div class="empty-state">
+                            <div class="empty-icon">📈</div>
+                            <h3>No recent activity</h3>
+                            <p>Your learning activity will appear here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="dashboard-card achievements-card">
+                    <div class="card-header">
+                        <h2>Achievements</h2>
+                    </div>
+                    <div class="achievements-list" id="achievements">
+                        <div class="empty-state">
+                            <div class="empty-icon">🏆</div>
+                            <h3>No achievements yet</h3>
+                            <p>Complete courses to earn achievements</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card actions-card">
+                    <div class="card-header">
+                        <h2>Quick Actions</h2>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="courses.html" class="action-btn">
+                            <div class="action-icon">📚</div>
+                            <span>Browse Courses</span>
+                        </a>
+                        <a href="course-details.html" class="action-btn">
+                            <div class="action-icon">🎯</div>
+                            <span>Continue Learning</span>
+                        </a>
+                        <a href="contact.html" class="action-btn">
+                            <div class="action-icon">💬</div>
+                            <span>Get Support</span>
+                        </a>
+                        <button class="action-btn" id="update-profile-btn">
+                            <div class="action-icon">⚙️</div>
+                            <span>Update Profile</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="edit-profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <span class="close" id="edit-profile-close">&times;</span>
+            </div>
+            <form class="auth-form" id="edit-profile-form">
+                <div class="form-group">
+                    <label for="edit-name">Full Name</label>
+                    <input type="text" id="edit-name" name="name" required>
+                    <span class="error-message" id="edit-name-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email</label>
+                    <input type="email" id="edit-email" name="email" required>
+                    <span class="error-message" id="edit-email-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="edit-bio">Bio (Optional)</label>
+                    <textarea id="edit-bio" name="bio" rows="3" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-interests">Learning Interests</label>
+                    <input type="text" id="edit-interests" name="interests" placeholder="e.g., Web Development, Data Science, Design">
+                </div>
+                <button type="submit" class="auth-submit-btn">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <p>&copy; 2024 EduFlex. All rights reserved.</p>
+                </div>
+                <div class="footer-right">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Instagram</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

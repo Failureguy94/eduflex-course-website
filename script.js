@@ -287,14 +287,348 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+// Authentication System
+class AuthSystem {
+    constructor() {
+        this.currentUser = null;
+
 // Rating and Wishlist System
 class RatingWishlistSystem {
     constructor() {
         this.wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
         this.init();
     }
 
     init() {
+
+        this.loadUserFromStorage();
+        this.setupEventListeners();
+        this.updateUI();
+    }
+
+    setupEventListeners() {
+        // Modal triggers
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (loginBtn) loginBtn.addEventListener('click', () => this.showModal('login'));
+        if (registerBtn) registerBtn.addEventListener('click', () => this.showModal('register'));
+        if (logoutBtn) logoutBtn.addEventListener('click', () => this.logout());
+
+        // Modal close buttons
+        const loginClose = document.getElementById('login-close');
+        const registerClose = document.getElementById('register-close');
+
+        if (loginClose) loginClose.addEventListener('click', () => this.hideModal('login'));
+        if (registerClose) registerClose.addEventListener('click', () => this.hideModal('register'));
+
+        // Modal switch links
+        const switchToRegister = document.getElementById('switch-to-register');
+        const switchToLogin = document.getElementById('switch-to-login');
+
+        if (switchToRegister) switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.hideModal('login');
+            this.showModal('register');
+        });
+
+        if (switchToLogin) switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.hideModal('register');
+            this.showModal('login');
+        });
+
+        // Form submissions
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+
+        if (loginForm) loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        if (registerForm) registerForm.addEventListener('submit', (e) => this.handleRegister(e));
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                this.hideModal('login');
+                this.hideModal('register');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.hideModal('login');
+                this.hideModal('register');
+            }
+        });
+    }
+
+    showModal(type) {
+        const modal = document.getElementById(`${type}-modal`);
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    hideModal(type) {
+        const modal = document.getElementById(`${type}-modal`);
+        if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+            this.clearForm(type);
+        }
+    }
+
+    clearForm(type) {
+        const form = document.getElementById(`${type}-form`);
+        if (form) {
+            form.reset();
+            this.clearErrors(type);
+        }
+    }
+
+    clearErrors(type) {
+        const errorElements = document.querySelectorAll(`#${type}-form .error-message`);
+        const inputElements = document.querySelectorAll(`#${type}-form input`);
+        
+        errorElements.forEach(error => error.textContent = '');
+        inputElements.forEach(input => input.classList.remove('error'));
+    }
+
+    showError(fieldId, message) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        const inputElement = document.getElementById(fieldId);
+        
+        if (errorElement) errorElement.textContent = message;
+        if (inputElement) inputElement.classList.add('error');
+    }
+
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    validatePassword(password) {
+        return password.length >= 6;
+    }
+
+    async handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        this.clearErrors('login');
+        
+        let isValid = true;
+        
+        if (!email) {
+            this.showError('login-email', 'Email is required');
+            isValid = false;
+        } else if (!this.validateEmail(email)) {
+            this.showError('login-email', 'Please enter a valid email');
+            isValid = false;
+        }
+        
+        if (!password) {
+            this.showError('login-password', 'Password is required');
+            isValid = false;
+        } else if (!this.validatePassword(password)) {
+            this.showError('login-password', 'Password must be at least 6 characters');
+            isValid = false;
+        }
+        
+        if (isValid) {
+            await this.performLogin(email, password);
+        }
+    }
+
+    async handleRegister(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('register-confirm-password').value;
+        const termsAgreed = document.getElementById('terms-agreement').checked;
+        
+        this.clearErrors('register');
+        
+        let isValid = true;
+        
+        if (!name.trim()) {
+            this.showError('register-name', 'Full name is required');
+            isValid = false;
+        }
+        
+        if (!email) {
+            this.showError('register-email', 'Email is required');
+            isValid = false;
+        } else if (!this.validateEmail(email)) {
+            this.showError('register-email', 'Please enter a valid email');
+            isValid = false;
+        }
+        
+        if (!password) {
+            this.showError('register-password', 'Password is required');
+            isValid = false;
+        } else if (!this.validatePassword(password)) {
+            this.showError('register-password', 'Password must be at least 6 characters');
+            isValid = false;
+        }
+        
+        if (!confirmPassword) {
+            this.showError('register-confirm-password', 'Please confirm your password');
+            isValid = false;
+        } else if (password !== confirmPassword) {
+            this.showError('register-confirm-password', 'Passwords do not match');
+            isValid = false;
+        }
+        
+        if (!termsAgreed) {
+            alert('Please agree to the Terms of Service');
+            isValid = false;
+        }
+        
+        if (isValid) {
+            await this.performRegister(name, email, password);
+        }
+    }
+
+    async performLogin(email, password) {
+        try {
+            // Simulate API call
+            await this.simulateDelay();
+            
+            // Check if user exists in localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                this.currentUser = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                };
+                
+                this.saveUserToStorage();
+                this.updateUI();
+                this.hideModal('login');
+                this.showSuccessMessage('Login successful! Welcome back!');
+            } else {
+                this.showError('login-password', 'Invalid email or password');
+            }
+        } catch (error) {
+            this.showError('login-password', 'Login failed. Please try again.');
+        }
+    }
+
+    async performRegister(name, email, password) {
+        try {
+            // Simulate API call
+            await this.simulateDelay();
+            
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const existingUser = users.find(u => u.email === email);
+            
+            if (existingUser) {
+                this.showError('register-email', 'Email already registered');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                name: name,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            this.currentUser = {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email
+            };
+            
+            this.saveUserToStorage();
+            this.updateUI();
+            this.hideModal('register');
+            this.showSuccessMessage('Registration successful! Welcome to EduFlex!');
+        } catch (error) {
+            this.showError('register-email', 'Registration failed. Please try again.');
+        }
+    }
+
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem('currentUser');
+        this.updateUI();
+        this.showSuccessMessage('Logged out successfully!');
+    }
+
+    updateUI() {
+        const authButtons = document.getElementById('auth-buttons');
+        const userMenu = document.getElementById('user-menu');
+        
+        if (this.currentUser) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userMenu) userMenu.style.display = 'flex';
+        } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userMenu) userMenu.style.display = 'none';
+        }
+    }
+
+    saveUserToStorage() {
+        if (this.currentUser) {
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+        }
+    }
+
+    loadUserFromStorage() {
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+        }
+    }
+
+    showSuccessMessage(message) {
+        // Create success message element
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = message;
+        successMessage.style.position = 'fixed';
+        successMessage.style.top = '100px';
+        successMessage.style.right = '20px';
+        successMessage.style.zIndex = '3000';
+        successMessage.style.maxWidth = '300px';
+        
+        document.body.appendChild(successMessage);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            successMessage.remove();
+        }, 3000);
+    }
+
+    simulateDelay() {
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
+
+// Initialize authentication system
+document.addEventListener('DOMContentLoaded', function() {
+    window.authSystem = new AuthSystem();
+});
+
         this.setupWishlistButtons();
         this.updateWishlistCount();
         this.loadWishlistState();
