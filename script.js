@@ -287,14 +287,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
 // Authentication System
 class AuthSystem {
     constructor() {
         this.currentUser = null;
+
+// Rating and Wishlist System
+class RatingWishlistSystem {
+    constructor() {
+        this.wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
         this.init();
     }
 
     init() {
+
         this.loadUserFromStorage();
         this.setupEventListeners();
         this.updateUI();
@@ -620,3 +628,247 @@ class AuthSystem {
 document.addEventListener('DOMContentLoaded', function() {
     window.authSystem = new AuthSystem();
 });
+
+        this.setupWishlistButtons();
+        this.updateWishlistCount();
+        this.loadWishlistState();
+    }
+
+    setupWishlistButtons() {
+        // Course card wishlist buttons
+        const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+        wishlistButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const courseId = button.getAttribute('data-course-id');
+                this.toggleWishlist(courseId, button);
+            });
+        });
+
+        // Course details wishlist button
+        const wishlistButton = document.querySelector('.wishlist-button');
+        if (wishlistButton) {
+            wishlistButton.addEventListener('click', () => {
+                const courseId = wishlistButton.getAttribute('data-course-id');
+                this.toggleWishlist(courseId, wishlistButton);
+            });
+        }
+
+        // Load more reviews button
+        const loadMoreBtn = document.getElementById('load-more-reviews');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                this.loadMoreReviews();
+            });
+        }
+    }
+
+    toggleWishlist(courseId, button) {
+        const courseData = this.getCourseData(courseId);
+        
+        if (this.isInWishlist(courseId)) {
+            this.removeFromWishlist(courseId);
+            this.updateButtonState(button, false);
+            this.showNotification('Removed from wishlist', 'info');
+        } else {
+            this.addToWishlist(courseData);
+            this.updateButtonState(button, true);
+            this.showNotification('Added to wishlist', 'success');
+        }
+        
+        this.updateWishlistCount();
+        this.saveWishlist();
+    }
+
+    getCourseData(courseId) {
+        const courseCard = document.querySelector(`[data-course-id="${courseId}"]`);
+        if (!courseCard) return null;
+
+        const title = courseCard.querySelector('h3').textContent;
+        const price = courseCard.querySelector('.course-price').textContent;
+        const rating = courseCard.querySelector('.stars').getAttribute('data-rating');
+        const ratingText = courseCard.querySelector('.rating-text').textContent;
+        const image = courseCard.querySelector('img').src;
+
+        return {
+            id: courseId,
+            title,
+            price,
+            rating,
+            ratingText,
+            image
+        };
+    }
+
+    addToWishlist(courseData) {
+        if (!this.isInWishlist(courseData.id)) {
+            this.wishlist.push(courseData);
+        }
+    }
+
+    removeFromWishlist(courseId) {
+        this.wishlist = this.wishlist.filter(course => course.id !== courseId);
+    }
+
+    isInWishlist(courseId) {
+        return this.wishlist.some(course => course.id === courseId);
+    }
+
+    updateButtonState(button, isInWishlist) {
+        const heartIcon = button.querySelector('.heart-icon');
+        const wishlistText = button.querySelector('.wishlist-text');
+        
+        if (isInWishlist) {
+            button.classList.add('active');
+            heartIcon.textContent = '♥';
+            if (wishlistText) {
+                wishlistText.textContent = 'In Wishlist';
+            }
+        } else {
+            button.classList.remove('active');
+            heartIcon.textContent = '♡';
+            if (wishlistText) {
+                wishlistText.textContent = 'Add to Wishlist';
+            }
+        }
+    }
+
+    loadWishlistState() {
+        // Update all wishlist buttons based on current wishlist
+        const wishlistButtons = document.querySelectorAll('.wishlist-btn, .wishlist-button');
+        wishlistButtons.forEach(button => {
+            const courseId = button.getAttribute('data-course-id');
+            if (courseId) {
+                this.updateButtonState(button, this.isInWishlist(courseId));
+            }
+        });
+    }
+
+    updateWishlistCount() {
+        const countElements = document.querySelectorAll('.wishlist-count');
+        countElements.forEach(element => {
+            element.textContent = this.wishlist.length;
+        });
+    }
+
+    saveWishlist() {
+        localStorage.setItem('wishlist', JSON.stringify(this.wishlist));
+    }
+
+    loadMoreReviews() {
+        const reviewsList = document.getElementById('reviews-list');
+        const loadMoreBtn = document.getElementById('load-more-reviews');
+        
+        // Simulate loading more reviews
+        const newReviews = [
+            {
+                name: 'Sarah Wilson',
+                initials: 'SW',
+                rating: 5,
+                date: '3 weeks ago',
+                text: 'Amazing course! The instructor is very knowledgeable and the content is well-structured. I would definitely recommend this to anyone starting their web development journey.'
+            },
+            {
+                name: 'Michael Chen',
+                initials: 'MC',
+                rating: 4,
+                date: '1 month ago',
+                text: 'Good course with practical examples. The pace is suitable for beginners and the projects help reinforce the concepts learned.'
+            }
+        ];
+
+        newReviews.forEach(review => {
+            const reviewElement = this.createReviewElement(review);
+            reviewsList.appendChild(reviewElement);
+        });
+
+        // Hide load more button after loading
+        loadMoreBtn.style.display = 'none';
+    }
+
+    createReviewElement(review) {
+        const reviewDiv = document.createElement('div');
+        reviewDiv.className = 'review-item';
+        
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        
+        reviewDiv.innerHTML = `
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">${review.initials}</div>
+                    <div class="reviewer-details">
+                        <h4>${review.name}</h4>
+                        <div class="review-rating">
+                            ${stars.split('').map(star => `<span class="star">${star}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <span class="review-date">${review.date}</span>
+            </div>
+            <p class="review-text">${review.text}</p>
+        `;
+        
+        return reviewDiv;
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#27ae60' : '#3498db'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Initialize rating and wishlist system
+document.addEventListener('DOMContentLoaded', function() {
+    window.ratingWishlistSystem = new RatingWishlistSystem();
+});
+
+// Add CSS animations for notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
