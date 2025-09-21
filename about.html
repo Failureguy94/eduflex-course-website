@@ -18,6 +18,18 @@
                 <a href="courses.html" class="nav-link">Courses</a>
                 <a href="about.html" class="nav-link active">About</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <a href="wishlist.html" class="nav-link wishlist-link">
+                    <span class="wishlist-icon">♡</span>
+                    <span class="wishlist-count" id="wishlist-count">0</span>
+                </a>
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="auth-btn login-btn" id="login-btn">Login</button>
+                    <button class="auth-btn register-btn" id="register-btn">Register</button>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <button class="auth-btn logout-btn" id="logout-btn">Logout</button>
+                </div>
             </div>
             <div class="nav-toggle" id="nav-toggle">
                 <span class="bar"></span>
@@ -73,6 +85,83 @@
             </div>
         </div>
     </footer>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to EduFlex</h2>
+                <span class="close" id="login-close">&times;</span>
+            </div>
+            <form class="auth-form" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" name="email" required>
+                    <span class="error-message" id="login-email-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                    <span class="error-message" id="login-password-error"></span>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember-me">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                <button type="submit" class="auth-submit-btn">Login</button>
+                <div class="auth-switch">
+                    Don't have an account? <a href="#" id="switch-to-register">Register here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <span class="close" id="register-close">&times;</span>
+            </div>
+            <form class="auth-form" id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" name="name" required>
+                    <span class="error-message" id="register-name-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" name="email" required>
+                    <span class="error-message" id="register-email-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" name="password" required>
+                    <span class="error-message" id="register-password-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" name="confirmPassword" required>
+                    <span class="error-message" id="register-confirm-password-error"></span>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms-agreement" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" class="terms-link">Terms of Service</a>
+                    </label>
+                </div>
+                <button type="submit" class="auth-submit-btn">Create Account</button>
+                <div class="auth-switch">
+                    Already have an account? <a href="#" id="switch-to-login">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

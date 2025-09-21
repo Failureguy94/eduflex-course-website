@@ -292,17 +292,10 @@ document.addEventListener('DOMContentLoaded', function() {
 class AuthSystem {
     constructor() {
         this.currentUser = null;
-
-// Rating and Wishlist System
-class RatingWishlistSystem {
-    constructor() {
-        this.wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-
         this.init();
     }
 
     init() {
-
         this.loadUserFromStorage();
         this.setupEventListeners();
         this.updateUI();
@@ -624,11 +617,14 @@ class RatingWishlistSystem {
     }
 }
 
-// Initialize authentication system
-document.addEventListener('DOMContentLoaded', function() {
-    window.authSystem = new AuthSystem();
-});
+// Rating and Wishlist System
+class RatingWishlistSystem {
+    constructor() {
+        this.wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        this.init();
+    }
 
+    init() {
         this.setupWishlistButtons();
         this.updateWishlistCount();
         this.loadWishlistState();
@@ -749,6 +745,9 @@ document.addEventListener('DOMContentLoaded', function() {
         countElements.forEach(element => {
             element.textContent = this.wishlist.length;
         });
+        
+        // Update localStorage for cross-page synchronization
+        localStorage.setItem('wishlistCount', this.wishlist.length.toString());
     }
 
     saveWishlist() {
@@ -841,9 +840,316 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
+// Initialize authentication system
+document.addEventListener('DOMContentLoaded', function() {
+    window.authSystem = new AuthSystem();
+});
+
 // Initialize rating and wishlist system
 document.addEventListener('DOMContentLoaded', function() {
     window.ratingWishlistSystem = new RatingWishlistSystem();
+});
+
+// Course Enrollment System
+class CourseEnrollmentSystem {
+    constructor() {
+        this.enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+        this.userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+        this.init();
+    }
+
+    init() {
+        this.setupEnrollmentButtons();
+        this.updateEnrollmentButtons();
+    }
+
+    setupEnrollmentButtons() {
+        const enrollButtons = document.querySelectorAll('.enroll-button');
+        enrollButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const courseId = button.getAttribute('data-course-id') || '1'; // Default to course 1
+                this.enrollInCourse(courseId);
+            });
+        });
+    }
+
+    enrollInCourse(courseId) {
+        // Check if user is logged in
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!currentUser) {
+            // Show login modal
+            if (window.authSystem) {
+                window.authSystem.showModal('login');
+            }
+            return;
+        }
+
+        // Check if already enrolled
+        if (this.isEnrolled(courseId)) {
+            this.showNotification('You are already enrolled in this course!', 'info');
+            return;
+        }
+
+        // Get course data
+        const courseData = this.getCourseData(courseId);
+        if (!courseData) {
+            this.showNotification('Course not found!', 'error');
+            return;
+        }
+
+        // Add to enrolled courses
+        const enrollmentData = {
+            ...courseData,
+            enrolledAt: Date.now(),
+            progress: 0
+        };
+
+        this.enrolledCourses.push(enrollmentData);
+        localStorage.setItem('enrolledCourses', JSON.stringify(this.enrolledCourses));
+
+        // Initialize progress tracking
+        this.userProgress[courseId] = {
+            percentage: 0,
+            hoursWatched: 0,
+            lastWatched: null,
+            completed: false
+        };
+        localStorage.setItem('userProgress', JSON.stringify(this.userProgress));
+
+        // Update UI
+        this.updateEnrollmentButtons();
+        this.showNotification('Successfully enrolled in course!', 'success');
+
+        // Simulate progress update after a delay
+        setTimeout(() => {
+            this.simulateProgress(courseId);
+        }, 2000);
+    }
+
+    isEnrolled(courseId) {
+        return this.enrolledCourses.some(course => course.id === courseId);
+    }
+
+    getCourseData(courseId) {
+        // This would normally fetch from a database
+        // For now, we'll use static data
+        const courses = {
+            '1': {
+                id: '1',
+                title: 'Web Development Fundamentals',
+                price: '$19.99',
+                rating: '4.5',
+                ratingText: '4.5 (128 reviews)',
+                image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop'
+            },
+            '2': {
+                id: '2',
+                title: 'Data Science & Analytics',
+                price: '$29.99',
+                rating: '4.8',
+                ratingText: '4.8 (95 reviews)',
+                image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop'
+            },
+            '3': {
+                id: '3',
+                title: 'UI/UX Design Mastery',
+                price: '$24.99',
+                rating: '4.3',
+                ratingText: '4.3 (76 reviews)',
+                image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=250&fit=crop'
+            },
+            '4': {
+                id: '4',
+                title: 'Digital Marketing Strategy',
+                price: '$34.99',
+                rating: '4.6',
+                ratingText: '4.6 (142 reviews)',
+                image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=250&fit=crop'
+            }
+        };
+
+        return courses[courseId];
+    }
+
+    updateEnrollmentButtons() {
+        const enrollButtons = document.querySelectorAll('.enroll-button');
+        enrollButtons.forEach(button => {
+            const courseId = button.getAttribute('data-course-id') || '1';
+            
+            if (this.isEnrolled(courseId)) {
+                button.textContent = 'Continue Learning';
+                button.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                button.onclick = () => {
+                    this.showNotification('Redirecting to course content...', 'info');
+                    // In a real app, this would redirect to the course player
+                };
+            } else {
+                button.textContent = 'Enroll Now';
+                button.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            }
+        });
+    }
+
+    simulateProgress(courseId) {
+        if (!this.userProgress[courseId]) return;
+
+        // Simulate watching progress
+        const progress = this.userProgress[courseId];
+        progress.percentage = Math.min(progress.percentage + Math.random() * 20, 100);
+        progress.hoursWatched += Math.random() * 2;
+        progress.lastWatched = Date.now();
+
+        if (progress.percentage >= 100) {
+            progress.completed = true;
+            this.showNotification('Congratulations! You completed the course!', 'success');
+        }
+
+        localStorage.setItem('userProgress', JSON.stringify(this.userProgress));
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Initialize course enrollment system
+document.addEventListener('DOMContentLoaded', function() {
+    window.courseEnrollmentSystem = new CourseEnrollmentSystem();
+});
+
+// Global wishlist count update function
+function updateGlobalWishlistCount() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const countElements = document.querySelectorAll('.wishlist-count');
+    countElements.forEach(element => {
+        element.textContent = wishlist.length;
+    });
+}
+
+// Update wishlist count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateGlobalWishlistCount();
+});
+
+// Listen for storage changes to update wishlist count across tabs
+window.addEventListener('storage', function(e) {
+    if (e.key === 'wishlist' || e.key === 'wishlistCount') {
+        updateGlobalWishlistCount();
+    }
+});
+
+// Enhanced Search Functionality
+class SearchSystem {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.setupSearchFunctionality();
+    }
+
+    setupSearchFunctionality() {
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const courseCards = document.querySelectorAll('.course-card');
+
+        if (searchInput && searchBtn && courseCards.length > 0) {
+            // Real-time search as user types
+            searchInput.addEventListener('input', (e) => {
+                this.performSearch(e.target.value, courseCards);
+            });
+
+            // Search on button click
+            searchBtn.addEventListener('click', () => {
+                this.performSearch(searchInput.value, courseCards);
+            });
+
+            // Search on Enter key
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.performSearch(searchInput.value, courseCards);
+                }
+            });
+        }
+    }
+
+    performSearch(searchTerm, courseCards) {
+        const term = searchTerm.toLowerCase().trim();
+        
+        courseCards.forEach(card => {
+            const courseTitle = card.querySelector('h3')?.textContent.toLowerCase() || '';
+            const courseDescription = card.querySelector('.course-content p')?.textContent.toLowerCase() || '';
+            
+            if (courseTitle.includes(term) || courseDescription.includes(term) || term === '') {
+                card.style.display = 'block';
+                card.style.animation = 'fadeInUp 0.5s ease-out';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show no results message if needed
+        this.showNoResultsMessage(term, courseCards);
+    }
+
+    showNoResultsMessage(searchTerm, courseCards) {
+        const coursesSection = document.querySelector('.courses-section');
+        let noResultsMsg = document.getElementById('no-results-message');
+        
+        const visibleCards = Array.from(courseCards).filter(card => 
+            card.style.display !== 'none'
+        );
+
+        if (searchTerm && visibleCards.length === 0) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.id = 'no-results-message';
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.innerHTML = `
+                    <div class="no-results-content">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>No courses found</h3>
+                        <p>Try adjusting your search terms or browse all courses</p>
+                        <button class="clear-search-btn" onclick="document.getElementById('search-input').value=''; window.searchSystem.performSearch('', document.querySelectorAll('.course-card'));">Clear Search</button>
+                    </div>
+                `;
+                coursesSection.appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+}
+
+// Initialize search system
+document.addEventListener('DOMContentLoaded', function() {
+    window.searchSystem = new SearchSystem();
 });
 
 // Add CSS animations for notifications
